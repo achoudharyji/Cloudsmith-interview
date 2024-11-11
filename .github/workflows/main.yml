@@ -33,7 +33,7 @@ jobs:
        run: ls -l mypackage/dist/
 
      - name: Upload Artifact
-       uses: actions/upload-artifact@v2
+       uses: actions/upload-artifact@v4
        with:
          name: python-package
          path: mypackage/dist/*.tar.gz
