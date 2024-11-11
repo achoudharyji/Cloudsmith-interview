@@ -1,63 +1,65 @@
 name: Deploy Package to Cloudsmith
+
 on:
- push:
-   branches:
-     - main
+  push:
+    branches:
+      - main
+
 permissions:
- id-token: write
- contents: read
+  id-token: write
+  contents: read
+
 jobs:
- build:
-   runs-on: ubuntu-latest
-   steps:
-     - name: Checkout repository
-       uses: actions/checkout@v2
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
        
-     - name: Set up Python
-       uses: actions/setup-python@v2
-       with:
-         python-version: '3.x'
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
          
-     - name: Install dependencies
-       run: |
-         python -m pip install --upgrade pip
-         pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
          
-     - name: Create a Python package
-       run: |
-         cd mypackage
-         python setup.py sdist bdist_wheel
-         cd ..
+      - name: Create a Python package
+        run: |
+          cd mypackage
+          python setup.py sdist bdist_wheel
+          cd ..
          
-     - name: List package files
-       run: ls -l mypackage/dist/
+      - name: List package files
+        run: ls -l mypackage/dist/
 
-     - name: Upload Artifact
-       uses: actions/upload-artifact@v4
-       with:
-         name: python-package
-         path: mypackage/dist/*.tar.gz
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package
+          path: mypackage/dist/*.tar.gz
 
-         
- deploy:
-   needs: build
-   runs-on: ubuntu-latest
-   steps:
-     - name: Checkout repository
-       uses: actions/checkout@v2
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
        
-     - name: Download Artifact
-       uses: actions/download-artifact@v4
-       with:
-         name: python-package
-         path: dist
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package
+          path: dist
          
-     - name: Install Cloudsmith CLI
-       uses: cloudsmith-io/cloudsmith-cli-action@v1.0.0
-       with:
-         oidc-namespace: 'interview-aditya-choudhary'
-         oidc-service-slug: 'githubsvc'
+      - name: Install Cloudsmith CLI
+        uses: cloudsmith-io/cloudsmith-cli-action@v1.0.0
+        with:
+          oidc-namespace: 'interview-aditya-choudhary'
+          oidc-service-slug: 'githubsvc'
 
-     - name: Push
-       run:
-        cloudsmith push python interview-aditya-choudhary/testrepo dist/*.tar.gz
+      - name: Push to Cloudsmith
+        run: |
+          cloudsmith push python interview-aditya-choudhary/task-1 dist/*.tar.gz
